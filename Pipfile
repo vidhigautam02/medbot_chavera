@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-langchain = "*"
+langchain = "0.2.15"
 langchain-google-genai = "1.0.10"
 streamlit = "1.37.1"
 pypdf2 = "3.0.0"
