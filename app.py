@@ -12,7 +12,7 @@ from langchain.chains import ConversationalRetrievalChain
 # load_dotenv()
 
 # Retrieve the API key from Streamlit secrets
-api_key = st.secrets["general"].get("GOOGLE_API_KEY", None)
+api_key = st.secrets["general"].get("Google_API_KEY", None)
 
 if not api_key:
     st.error("Google API key not found in secrets. Please configure it in Streamlit secrets.")
