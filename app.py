@@ -8,11 +8,15 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
 from langchain.chains import ConversationalRetrievalChain
 
-# Load environment variables
-load_dotenv()
+# Load environment variables (use only if using .env file locally)
+# load_dotenv()
 
-# Retrieve the API key from environment variables
-api_key = os.getenv('GOOGLE_API_KEY')
+# Retrieve the API key from Streamlit secrets
+api_key = st.secrets["general"].get("GOOGLE_API_KEY", None)
+
+if not api_key:
+    st.error("Google API key not found in secrets. Please configure it in Streamlit secrets.")
+    st.stop()  # Stop further execution if API key is not found
 
 # Path to the FAISS index
 faiss_index_path = "faiss_index/index.faiss"
@@ -52,15 +56,15 @@ def initialize_index():
                 chunks_with_sources = [(chunk, {"source": os.path.basename(pdf_path)}) for chunk in chunks]
                 all_chunks_with_sources.extend(chunks_with_sources)
         except Exception as e:
-            print(f"Error reading {pdf_path}: {e}")
+            st.error(f"Error reading {pdf_path}: {e}")
 
     if all_chunks_with_sources:
         text_chunks, metadata = zip(*all_chunks_with_sources)
         vector_store = FAISS.from_texts(text_chunks, embedding=embeddings, metadatas=metadata)
         vector_store.save_local(faiss_index_path)
-        print("FAISS index created or updated successfully.")
+        st.success("FAISS index created or updated successfully.")
     else:
-        print("No valid PDF data to process. Please check your PDF files.")
+        st.error("No valid PDF data to process. Please check your PDF files.")
 
 def query(question, chat_history):
     """
@@ -164,7 +168,7 @@ def show_ui():
         # Reset the chat state
         st.session_state.messages = []
         st.session_state.chat_history = []
-       
+
 if __name__ == "__main__":
     # Uncomment the line below to initialize or update the FAISS index
     #initialize_index()
