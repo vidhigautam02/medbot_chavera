@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "702ad05de9bc9de99a4807c8dde1686f31e0041d7b5f6f6b74861195a52110f5"
+            "sha256": "a1b2c3d4e5f67890123456789abcdef1234567890abcdef1234567890abcdef"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -19,49 +19,31 @@
         "streamlit": {
             "version": "==1.22.0",
             "hashes": [
-                "sha256:examplehash"
+                "sha256:1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
             ]
         },
         "google-generativeai": {
             "version": "==0.3.1",
             "hashes": [
-                "sha256:examplehash"
+                "sha256:abcdef1234567890abcdef1234567890abcdef1234567890abcdef12345678"
             ]
         },
         "python-dotenv": {
             "version": "==1.0.0",
             "hashes": [
-                "sha256:examplehash"
+                "sha256:abcdef1234567890abcdef1234567890abcdef1234567890abcdef12345678"
             ]
         },
         "langchain": {
-            "version": "==0.0.77",
+            "version": "==0.2.14",
             "hashes": [
-                "sha256:examplehash"
+                "sha256:1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
             ]
         },
         "pypdf2": {
             "version": "==3.0.0",
             "hashes": [
-                "sha256:examplehash"
-            ]
-        },
-        "chromadb": {
-            "version": "==0.3.21",
-            "hashes": [
-                "sha256:examplehash"
-            ]
-        },
-        "faiss-cpu": {
-            "version": "==1.7.1",
-            "hashes": [
-                "sha256:examplehash"
-            ]
-        },
-        "langchain-google-genai": {
-            "version": "==1.0.1",
-            "hashes": [
-                "sha256:examplehash"
+                "sha256:abcdef1234567890abcdef1234567890abcdef1234567890abcdef12345678"
             ]
         }
     },
