@@ -12,6 +12,8 @@ langchain-community="*"
 altair = "5.4.0"
 python-dotenv = "1.0.1"
 faiss-cpu = "*"
+faiss-gpu = "*"
+
 # Add other dependencies as needed
 
 [dev-packages]
