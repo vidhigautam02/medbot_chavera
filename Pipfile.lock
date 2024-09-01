@@ -15,6 +15,55 @@
             }
         ]
     },
-    "default": {},
+    "default": {
+        "streamlit": {
+            "version": "==1.22.0",
+            "hashes": [
+                "sha256:examplehash"
+            ]
+        },
+        "google-generativeai": {
+            "version": "==0.3.1",
+            "hashes": [
+                "sha256:examplehash"
+            ]
+        },
+        "python-dotenv": {
+            "version": "==1.0.0",
+            "hashes": [
+                "sha256:examplehash"
+            ]
+        },
+        "langchain": {
+            "version": "==0.0.77",
+            "hashes": [
+                "sha256:examplehash"
+            ]
+        },
+        "pypdf2": {
+            "version": "==3.0.0",
+            "hashes": [
+                "sha256:examplehash"
+            ]
+        },
+        "chromadb": {
+            "version": "==0.3.21",
+            "hashes": [
+                "sha256:examplehash"
+            ]
+        },
+        "faiss-cpu": {
+            "version": "==1.7.1",
+            "hashes": [
+                "sha256:examplehash"
+            ]
+        },
+        "langchain-google-genai": {
+            "version": "==1.0.1",
+            "hashes": [
+                "sha256:examplehash"
+            ]
+        }
+    },
     "develop": {}
 }
