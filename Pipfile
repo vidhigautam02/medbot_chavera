@@ -9,6 +9,7 @@ langchain-google-genai = "1.0.10"  # Check compatibility
 streamlit = "1.37.1"
 pypdf2 = "3.0.0"
 altair = "5.4.0"
+python-dotenv = "1.0.1"
 # Add other dependencies as needed
 
 [dev-packages]
