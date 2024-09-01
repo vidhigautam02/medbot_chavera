@@ -10,13 +10,18 @@ from langchain.chains import ConversationalRetrievalChain
 
 # Load environment variables (use only if using .env file locally)
 # load_dotenv()
+load_dotenv()
 
-# Retrieve the API key from Streamlit secrets
-api_key = st.secrets["general"].get("Google_API_KEY", None)
+# Set up the LLM (Google Gemini)
 
-if not api_key:
-    st.error("Google API key not found in secrets. Please configure it in Streamlit secrets.")
-    st.stop()  # Stop further execution if API key is not found
+api_key=os.getenv("GOOGLE_API_KEY")
+
+# Set up the LLM (Google Gemini)
+llm = ChatGoogleGenerativeAI(
+    model="gemini-pro",
+    google_api_key=os.getenv("GOOGLE_API_KEY")
+)
+
 
 # Path to the FAISS index
 faiss_index_path = "faiss_index/index.faiss"
