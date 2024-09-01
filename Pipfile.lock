@@ -17,37 +17,37 @@
     },
     "default": {
         "streamlit": {
-            "version": "==1.22.0",
+            "version": "1.22.0",
             "hashes": [
                 "sha256:1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
             ]
         },
         "google-generativeai": {
-            "version": "==0.3.1",
+            "version": "0.3.1",
             "hashes": [
                 "sha256:abcdef1234567890abcdef1234567890abcdef1234567890abcdef12345678"
             ]
         },
         "langchain_google_genai": {
-            "version": "==0.1.0",
+            "version": "0.1.0",
             "hashes": [
                 "sha256:234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
             ]
         },
         "python-dotenv": {
-            "version": "==1.0.0",
+            "version": "1.0.0",
             "hashes": [
                 "sha256:abcdef1234567890abcdef1234567890abcdef1234567890abcdef12345678"
             ]
         },
         "langchain": {
-            "version": "==0.2.14",
+            "version": "0.2.14",
             "hashes": [
                 "sha256:1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
             ]
         },
         "pypdf2": {
-            "version": "==3.0.0",
+            "version": "3.0.0",
             "hashes": [
                 "sha256:abcdef1234567890abcdef1234567890abcdef1234567890abcdef12345678"
             ]
