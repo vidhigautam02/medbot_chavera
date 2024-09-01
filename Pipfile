@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 langchain = "0.2.14"  # Update if needed
 langchain-google-genai = "1.0.10"  # Check compatibility
+langchain-community = "0.2.15"
 streamlit = "1.37.1"
 pypdf2 = "3.0.0"
 altair = "5.4.0"
