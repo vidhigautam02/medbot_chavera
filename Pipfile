@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-langchain = "0.2.15"  # Update if needed
+langchain = "0.2.14"  # Update if needed
 langchain-google-genai = "1.0.10"  # Check compatibility
 streamlit = "1.37.1"
 pypdf2 = "3.0.0"
