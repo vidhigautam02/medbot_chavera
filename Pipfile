@@ -4,10 +4,11 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-langchain = ">=0.3.0"  # Ensure compatibility with langchain-google-genai and langchain-community
+langchain = "0.2.15" 
 langchain-google-genai = "1.0.10"
 streamlit = "1.37.1"
 pypdf2 = "3.0.0"
+langchain-community="*"
 altair = "5.4.0"
 python-dotenv = "1.0.1"
 # Add other dependencies as needed
