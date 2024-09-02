@@ -2,31 +2,38 @@ import os
 import streamlit as st
 from dotenv import load_dotenv
 from PyPDF2 import PdfReader
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
 from langchain.chains import ConversationalRetrievalChain
+from nltk.corpus import wordnet
+import nltk
 
-# Load environment variables (use only if using .env file locally)
-# load_dotenv()
+# Load environment variables
 load_dotenv()
 
-# Set up the LLM (Google Gemini)
-
-api_key=os.getenv("GOOGLE_API_KEY")
-
-# Set up the LLM (Google Gemini)
-llm = ChatGoogleGenerativeAI(
-    model="gemini-pro",
-    google_api_key=os.getenv("GOOGLE_API_KEY")
-)
-
+# Retrieve the API key from environment variables
+api_key = os.getenv('GOOGLE_API_KEY')
 
 # Path to the FAISS index
 faiss_index_path = "faiss_index/index.faiss"
 
-# Function to create or update the FAISS index
+# Download WordNet data if not already present
+nltk.download('wordnet')
+
+def expand_query(query):
+    """
+    Expand the query with synonyms to improve understanding.
+    """
+    synonyms = set()
+    words = query.split()
+    for word in words:
+        for syn in wordnet.synsets(word):
+            for lemma in syn.lemmas():
+                synonyms.add(lemma.name())
+    expanded_query = ' '.join(synonyms)
+    return expanded_query
+
 def initialize_index():
     """
     Initialize or update the FAISS index with your PDFs.
@@ -45,7 +52,6 @@ def initialize_index():
     
     embeddings = GoogleGenerativeAIEmbeddings(api_key=api_key, model="models/text-embedding-004")
     
-    # Initialize a list to hold text chunks and their sources
     all_chunks_with_sources = []
     
     for pdf_path in PDF_PATHS:
@@ -61,64 +67,50 @@ def initialize_index():
                 chunks_with_sources = [(chunk, {"source": os.path.basename(pdf_path)}) for chunk in chunks]
                 all_chunks_with_sources.extend(chunks_with_sources)
         except Exception as e:
-            st.error(f"Error reading {pdf_path}: {e}")
+            print(f"Error reading {pdf_path}: {e}")
 
     if all_chunks_with_sources:
         text_chunks, metadata = zip(*all_chunks_with_sources)
         vector_store = FAISS.from_texts(text_chunks, embedding=embeddings, metadatas=metadata)
         vector_store.save_local(faiss_index_path)
-        st.success("FAISS index created or updated successfully.")
+        print("FAISS index created or updated successfully.")
     else:
-        st.error("No valid PDF data to process. Please check your PDF files.")
+        print("No valid PDF data to process. Please check your PDF files.")
 
 def query(question, chat_history):
     """
-    This function handles querying the chatbot.
-    Parameters:
-    - question: The user's query as a string.
-    - chat_history: A list of tuples containing the history of question-answer pairs.
+    Handle the querying of the chatbot with context.
     """
     try:
         embeddings = GoogleGenerativeAIEmbeddings(api_key=api_key, model="models/text-embedding-004")
         
-        # Load FAISS index
         new_db = FAISS.load_local(faiss_index_path, embeddings=embeddings, allow_dangerous_deserialization=True)
         
-        # Initialize the LLM model
         llm = ChatGoogleGenerativeAI(model="models/gemini-1.5-flash", google_api_key=api_key)
         
-        # Initialize a Conversational Retrieval Chain
         query_chain = ConversationalRetrievalChain.from_llm(
             llm=llm,
             retriever=new_db.as_retriever(),
             return_source_documents=True
         )
         
-        response = query_chain({"question": question, "chat_history": chat_history})
+        # Expand the query to include synonyms
+        expanded_question = expand_query(question)
         
-        # Extract source documents
-        source_docs = response.get("source_documents", [])
+        response = query_chain({"question": expanded_question, "chat_history": chat_history})
         
-        # Only attribute sources if they directly contribute to the response
-        if source_docs:
-            relevant_sources = []
-            relevant_content = ""
-            for doc in source_docs:
-                if question.lower() in doc.page_content.lower():
-                    relevant_sources.append(doc.metadata['source'])
-                    relevant_content += doc.page_content
-            
-            if relevant_sources:
-                answer = response.get("answer", "").strip()
-                return {"answer": answer, "sources": list(set(relevant_sources))}
-            else:
-                return {"answer": "I'm sorry, I don't have more information about this context.", "sources": []}
-        else:
-            # If no relevant content is found in the PDFs
-            return {"answer": "I'm sorry, I don't have more information about this context.", "sources": []}
+        sources = response.get("source_documents", [])
+        source_names = list(set(source.metadata.get("source", "Unknown") for source in sources))
+        
+        answer = response.get("answer", "").strip()
+        if not answer:
+            return {"answer": "Information not provided to me, so I'm not able to give a response.", "sources": ""}
+        
+        return {"answer": answer, "sources": "" if not source_names else source_names}
     except Exception as e:
         st.error(f"An error occurred while querying: {str(e)}")
-        return {"answer": "Sorry, I couldn't process your query due to an error.", "sources": []}
+        return {"answer": "Sorry, there was an error processing your query.", "sources": "source not found"}
+
 
 def show_ui():
     """
@@ -151,17 +143,12 @@ def show_ui():
                     st.markdown(prompt)
                 with st.chat_message("assistant"):
                     st.markdown(f"{response.get('answer', 'Sorry, I couldn\'t find an answer.')}")
-                    
-                    # Only display sources if they exist
                     if response.get('sources'):
                         st.write(f"**Source(s):** {', '.join(response['sources'])}")
 
                 st.session_state.messages.append({"role": "user", "content": prompt})
                 st.session_state.messages.append({"role": "assistant", "content": response.get('answer', 'Sorry, I couldn\'t find an answer.')})
-                
-                # Only store sources if they exist
-                if response.get('sources'):
-                    st.session_state.messages.append({"role": "assistant", "content": f"**Source(s):** {', '.join(response['sources'])}"})
+                st.session_state.messages.append({"role": "assistant", "content": f"**Source(s):** {', '.join(response['sources'])}"})
                 
                 # Update chat history
                 st.session_state.chat_history.append((prompt, response.get('answer', 'Sorry, I couldn\'t find an answer.')))
@@ -173,10 +160,12 @@ def show_ui():
         # Reset the chat state
         st.session_state.messages = []
         st.session_state.chat_history = []
+       
 
+# Program entry point
 if __name__ == "__main__":
     # Uncomment the line below to initialize or update the FAISS index
-    #initialize_index()
+    initialize_index()
 
     # Comment the line above after the index is created/updated
     show_ui()
