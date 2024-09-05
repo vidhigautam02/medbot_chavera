@@ -79,8 +79,8 @@ def reframe_with_gemini(text,question):
     
     # Set up the generation configuration
     generation_config = {
-        "temperature": 0.3,
-        "max_output_tokens": 1200,
+        "temperature": 0.1,
+        "max_output_tokens": 800,
     }
     
     # Initialize the model
