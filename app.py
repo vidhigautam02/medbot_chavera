@@ -81,7 +81,7 @@ def reframe_with_gemini(text,question):
     # Set up the generation configuration
     generation_config = {
         "temperature": 0.3,
-        "max_output_tokens": 1200,
+        "max_output_tokens": 1000,
     }
     
     # Initialize the model
@@ -93,7 +93,7 @@ def reframe_with_gemini(text,question):
     # Prepare the prompt
     prompt = f"""
     Based on the question: {question}, generate a clear, concise, and well-organized response using only the relevant information from the text below.Focus solely on answering the question without including any unrelated details. Present the response in bullet points or brief sections where needed, and avoid unnecessary explanations or repetition. 
-    Ensure the answer is easy to understand and sticks strictly to the given text, with no additional information. Limit the response to 1000 words.
+    Ensure the answer is easy to understand and sticks strictly to the given text, with no additional information.
 
     {text}
     """
