@@ -1,20 +1,309 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "6b8ddfb328d99be334aa16a8e39c6df648d64a8bf09e49a419e96b112c3d2d0a"
+            "sha256": "some_hash_value_here"
         },
-        "pipfile-spec": 6,
+        "pipenv-version": "2023.4.2",
         "requires": {
             "python_version": "3.12"
-        },
-        "sources": [
-            {
-                "name": "pypi",
-                "url": "https://pypi.org/simple",
-                "verify_ssl": true
-            }
-        ]
+        }
     },
-    "default": {},
+    "default": {
+        "streamlit": {
+            "version": "1.22.0",
+            "hashes": [
+                "sha256:examplehash1",
+                "sha256:examplehash2"
+            ]
+        },
+        "altair": {
+            "version": "5.4.0",
+            "hashes": [
+                "sha256:examplehash3",
+                "sha256:examplehash4"
+            ]
+        },
+        "langchain": {
+            "version": "0.2.14",
+            "hashes": [
+                "sha256:examplehash5",
+                "sha256:examplehash6"
+            ]
+        },
+        "pypdf2": {
+            "version": "3.0.0",
+            "hashes": [
+                "sha256:examplehash7",
+                "sha256:examplehash8"
+            ]
+        },
+        "annotated-types": {
+            "version": "0.7.0",
+            "hashes": [
+                "sha256:examplehash9",
+                "sha256:examplehash10"
+            ]
+        },
+        "charset-normalizer": {
+            "version": "3.3.2",
+            "hashes": [
+                "sha256:examplehash11",
+                "sha256:examplehash12"
+            ]
+        },
+        "click": {
+            "version": "8.1.7",
+            "hashes": [
+                "sha256:examplehash13",
+                "sha256:examplehash14"
+            ]
+        },
+        "colorama": {
+            "version": "0.4.6",
+            "hashes": [
+                "sha256:examplehash15",
+                "sha256:examplehash16"
+            ]
+        },
+        "GitPython": {
+            "version": "3.1.43",
+            "hashes": [
+                "sha256:examplehash17",
+                "sha256:examplehash18"
+            ]
+        },
+        "google-auth": {
+            "version": "2.34.0",
+            "hashes": [
+                "sha256:examplehash19",
+                "sha256:examplehash20"
+            ]
+        },
+        "google-auth-httplib2": {
+            "version": "0.2.0",
+            "hashes": [
+                "sha256:examplehash21",
+                "sha256:examplehash22"
+            ]
+        },
+        "google-cloud": {
+            "version": "0.34.0",
+            "hashes": [
+                "sha256:examplehash23",
+                "sha256:examplehash24"
+            ]
+        },
+        "google-generativeai": {
+            "version": "0.7.2",
+            "hashes": [
+                "sha256:examplehash25",
+                "sha256:examplehash26"
+            ]
+        },
+        "grpcio-status": {
+            "version": "1.62.3",
+            "hashes": [
+                "sha256:examplehash27",
+                "sha256:examplehash28"
+            ]
+        },
+        "h11": {
+            "version": "0.14.0",
+            "hashes": [
+                "sha256:examplehash29",
+                "sha256:examplehash30"
+            ]
+        },
+        "langchain-core": {
+            "version": "0.2.34",
+            "hashes": [
+                "sha256:examplehash31",
+                "sha256:examplehash32"
+            ]
+        },
+        "langchain-google-genai": {
+            "version": "1.0.10",
+            "hashes": [
+                "sha256:examplehash33",
+                "sha256:examplehash34"
+            ]
+        },
+        "langchain-text-splitters": {
+            "version": "0.2.2",
+            "hashes": [
+                "sha256:examplehash35",
+                "sha256:examplehash36"
+            ]
+        },
+        "langsmith": {
+            "version": "0.1.104",
+            "hashes": [
+                "sha256:examplehash37",
+                "sha256:examplehash38"
+            ]
+        },
+        "markdown-it-py": {
+            "version": "3.0.0",
+            "hashes": [
+                "sha256:examplehash39",
+                "sha256:examplehash40"
+            ]
+        },
+        "MarkupSafe": {
+            "version": "2.1.5",
+            "hashes": [
+                "sha256:examplehash41",
+                "sha256:examplehash42"
+            ]
+        },
+        "packaging": {
+            "version": "24.1",
+            "hashes": [
+                "sha256:examplehash43",
+                "sha256:examplehash44"
+            ]
+        },
+        "pandas": {
+            "version": "2.2.2",
+            "hashes": [
+                "sha256:examplehash45",
+                "sha256:examplehash46"
+            ]
+        },
+        "pillow": {
+            "version": "10.4.0",
+            "hashes": [
+                "sha256:examplehash47",
+                "sha256:examplehash48"
+            ]
+        },
+        "pyasn1": {
+            "version": "0.6.0",
+            "hashes": [
+                "sha256:examplehash49",
+                "sha256:examplehash50"
+            ]
+        },
+        "pyasn1_modules": {
+            "version": "0.4.0",
+            "hashes": [
+                "sha256:examplehash51",
+                "sha256:examplehash52"
+            ]
+        },
+        "pydantic_core": {
+            "version": "2.20.1",
+            "hashes": [
+                "sha256:examplehash53",
+                "sha256:examplehash54"
+            ]
+        },
+        "Pygments": {
+            "version": "2.18.0",
+            "hashes": [
+                "sha256:examplehash55",
+                "sha256:examplehash56"
+            ]
+        },
+        "python-dateutil": {
+            "version": "2.9.0.post0",
+            "hashes": [
+                "sha256:examplehash57",
+                "sha256:examplehash58"
+            ]
+        },
+        "python-dotenv": {
+            "version": "1.0.1",
+            "hashes": [
+                "sha256:examplehash59",
+                "sha256:examplehash60"
+            ]
+        },
+        "PyYAML": {
+            "version": "6.0.2",
+            "hashes": [
+                "sha256:examplehash61",
+                "sha256:examplehash62"
+            ]
+        },
+        "referencing": {
+            "version": "0.35.1",
+            "hashes": [
+                "sha256:examplehash63",
+                "sha256:examplehash64"
+            ]
+        },
+        "requests": {
+            "version": "2.32.3",
+            "hashes": [
+                "sha256:examplehash65",
+                "sha256:examplehash66"
+            ]
+        },
+        "rich": {
+            "version": "13.7.1",
+            "hashes": [
+                "sha256:examplehash67",
+                "sha256:examplehash68"
+            ]
+        },
+        "rsa": {
+            "version": "4.9",
+            "hashes": [
+                "sha256:examplehash69",
+                "sha256:examplehash70"
+            ]
+        },
+        "six": {
+            "version": "1.16.0",
+            "hashes": [
+                "sha256:examplehash71",
+                "sha256:examplehash72"
+            ]
+        },
+        "tenacity": {
+            "version": "8.5.0",
+            "hashes": [
+                "sha256:examplehash73",
+                "sha256:examplehash74"
+            ]
+        },
+        "tornado": {
+            "version": "6.4.1",
+            "hashes": [
+                "sha256:examplehash75",
+                "sha256:examplehash76"
+            ]
+        },
+        "typing_extensions": {
+            "version": "4.12.2",
+            "hashes": [
+                "sha256:examplehash77",
+                "sha256:examplehash78"
+            ]
+        },
+        "urllib3": {
+            "version": "2.2.2",
+            "hashes": [
+                "sha256:examplehash79",
+                "sha256:examplehash80"
+            ]
+        },
+        "watchdog": {
+            "version": "4.0.2",
+            "hashes": [
+                "sha256:examplehash81",
+                "sha256:examplehash82"
+            ]
+        },
+        "yarl": {
+            "version": "1.9.4",
+            "hashes": [
+                "sha256:examplehash83",
+                "sha256:examplehash84"
+            ]
+        }
+    },
     "develop": {}
 }
+
