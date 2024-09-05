@@ -80,9 +80,7 @@ def reframe_with_gemini(text,question):
     # Set up the generation configuration
     generation_config = {
         "temperature": 0.1,
-        "max_output_tokens": 800,
-        "frequency_penalty": 0.5
-
+        "max_output_tokens": 1200,
     }
     
     # Initialize the model
@@ -93,7 +91,6 @@ def reframe_with_gemini(text,question):
     
     # Prepare the prompt
     prompt = f"""
-    Based on the provided information: "{question}", 
     Based on the provided information: "{question}", 
     generate a concise and well-organized response using only the details from the text below. 
     Ensure the answer is clear, easy to read, and avoids unnecessary headings or repetition. 
