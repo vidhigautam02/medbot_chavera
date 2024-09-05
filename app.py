@@ -7,8 +7,7 @@ from langchain.chains import ConversationalRetrievalChain
 from PyPDF2 import PdfReader
 from langchain_community.vectorstores import FAISS
 import google.generativeai as genai
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
 import requests
 import re
 
@@ -81,7 +80,7 @@ def reframe_with_gemini(text,question):
     # Set up the generation configuration
     generation_config = {
         "temperature": 0.3,
-        "max_output_tokens": 1000,
+        "max_output_tokens": 1200,
     }
     
     # Initialize the model
@@ -92,8 +91,14 @@ def reframe_with_gemini(text,question):
     
     # Prepare the prompt
     prompt = f"""
-    Based on the question: {question}, generate a clear, concise, and well-organized response using only the relevant information from the text below.Focus solely on answering the question without including any unrelated details. Present the response in bullet points or brief sections where needed, and avoid unnecessary explanations or repetition. 
-    Ensure the answer is easy to understand and sticks strictly to the given text, with no additional information.
+    Based on the provided information: "{question}", 
+    generate a concise and well-organized response using only the details from the text below. 
+    Ensure the answer is clear, easy to read, and avoids unnecessary headings or repetition. 
+    Present the information in bullet points or short subheadings where appropriate.
+    and avoid using too many headings for the same reference. 
+    Do not include any new or external information; stick strictly to the given text. 
+    ensure the answer max of 1000 words
+    The response should be brief, detailed, and easily understandable by anyone.
 
     {text}
     """
