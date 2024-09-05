@@ -1,120 +1,194 @@
 import os
-import streamlit as st
+import logging
 from dotenv import load_dotenv
-from PyPDF2 import PdfReader
-from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
+import streamlit as st
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.vectorstores import FAISS
 from langchain.chains import ConversationalRetrievalChain
-from nltk.corpus import wordnet
-import nltk
+from PyPDF2 import PdfReader
+from langchain_community.vectorstores import FAISS
+import google.generativeai as genai
+from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
+import requests
+import re
+
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Load environment variables
 load_dotenv()
 
-# Retrieve the API key from environment variables
-api_key = os.getenv('GOOGLE_API_KEY')
+# Check if required environment variables are set
+if not os.getenv('GOOGLE_API_KEY'):
+    raise ValueError("GOOGLE_API_KEY environment variable not set")
 
-# Path to the FAISS index
-faiss_index_path = "faiss_index/index.faiss"
+def extract_text_from_pdf(pdf_path):
+    """
+    Extracts text from a PDF file.
+    """
+    text = ""
+    try:
+        with open(pdf_path, "rb") as file:
+            pdf_reader = PdfReader(file)
+            for page in pdf_reader.pages:
+                page_text = page.extract_text()
+                if page_text:
+                    text += page_text
+                else:
+                    logging.warning(f"Text extraction failed for page in {pdf_path}.")
+    except Exception as e:
+        logging.error(f"Error reading {pdf_path}: {e}")
+    return text
 
-# Download WordNet data if not already present
-nltk.download('wordnet')
+def process_pdf(pdf_path):
+    """
+    Processes a single PDF file: extracts text, splits it into chunks,
+    and converts chunks into embeddings.
+    """
+    logging.info(f"Processing file: {pdf_path}")
+    text = extract_text_from_pdf(pdf_path)
 
-def expand_query(query):
-    """
-    Expand the query with synonyms to improve understanding.
-    """
-    synonyms = set()
-    words = query.split()
-    for word in words:
-        for syn in wordnet.synsets(word):
-            for lemma in syn.lemmas():
-                synonyms.add(lemma.name())
-    expanded_query = ' '.join(synonyms)
-    return expanded_query
+    # Split text into manageable chunks
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+    chunks = text_splitter.split_text(text)
+    chunks_with_sources = [(chunk, {"source": os.path.basename(pdf_path)}) for chunk in chunks]
+    return chunks_with_sources
 
-def initialize_index():
+def upload_pdfs(pdf_paths):
     """
-    Initialize or update the FAISS index with your PDFs.
-    Call this function once to create or update the index, then comment it out.
+    Processes a list of PDF files: extracts text, splits it into chunks,
+    converts chunks into embeddings, and saves them into a FAISS vector store.
     """
-    # Paths to your PDF files
-    PDF_PATHS = [
-        r"C:\Users\vidhi\Desktop\chavera medbot\Common Diseases and Conditions.pdf",
-        r"C:\Users\vidhi\Desktop\chavera medbot\Common Symptoms and Their Potential Diagnoses.pdf",
-        r"C:\Users\vidhi\Desktop\chavera medbot\First Aid Basics.pdf",
-        r"C:\Users\vidhi\Desktop\chavera medbot\General Health Knowledge.pdf",
-        r"C:\Users\vidhi\Desktop\chavera medbot\Medications and Treatment Options.pdf",
-        r"C:\Users\vidhi\Desktop\chavera medbot\Promoting Healthy Habits.pdf",
-        r"C:\Users\vidhi\Desktop\chavera medbot\Women's Health Overview.pdf"
-    ]
-    
-    embeddings = GoogleGenerativeAIEmbeddings(api_key=api_key, model="models/text-embedding-004")
-    
     all_chunks_with_sources = []
-    
-    for pdf_path in PDF_PATHS:
-        try:
-            with open(pdf_path, "rb") as file:
-                pdf_reader = PdfReader(file)
-                text = ""
-                for page in pdf_reader.pages:
-                    text += page.extract_text() or ""
-                
-                text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=500)
-                chunks = text_splitter.split_text(text)
-                chunks_with_sources = [(chunk, {"source": os.path.basename(pdf_path)}) for chunk in chunks]
-                all_chunks_with_sources.extend(chunks_with_sources)
-        except Exception as e:
-            print(f"Error reading {pdf_path}: {e}")
+    for pdf_path in pdf_paths:
+        chunks_with_sources = process_pdf(pdf_path)
+        all_chunks_with_sources.extend(chunks_with_sources)
 
     if all_chunks_with_sources:
         text_chunks, metadata = zip(*all_chunks_with_sources)
+        embeddings = GoogleGenerativeAIEmbeddings(api_key=os.getenv('GOOGLE_API_KEY'), model="models/text-embedding-004")
         vector_store = FAISS.from_texts(text_chunks, embedding=embeddings, metadatas=metadata)
-        vector_store.save_local(faiss_index_path)
-        print("FAISS index created or updated successfully.")
+        vector_store.save_local("faiss_index")
+        logging.info("FAISS index created or updated successfully.")
     else:
-        print("No valid PDF data to process. Please check your PDF files.")
+        logging.warning("No valid PDF data to process. Please check your PDF files.")
+
+
+def reframe_with_gemini(text,question):
+    # Configure the API key from the environment variable
+    genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+    
+    # Set up the generation configuration
+    generation_config = {
+        "temperature": 0.3,
+        "max_output_tokens": 1200,
+    }
+    
+    # Initialize the model
+    model = genai.GenerativeModel(
+        model_name="gemini-1.5-flash",
+        generation_config=generation_config,
+    )
+    
+    # Prepare the prompt
+    prompt = f"""
+    Based on the provided information: "{question}", 
+    generate a concise and well-organized response using only the details from the text below. 
+    Ensure the answer is clear, easy to read, and avoids unnecessary headings or repetition. 
+    Present the information in bullet points or short subheadings where appropriate.
+    and avoid using too many headings for the same reference. 
+    Do not include any new or external information; stick strictly to the given text. 
+    ensure the answer max of 1000 words
+    The response should be brief, detailed, and easily understandable by anyone.
+
+    {text}
+    """
+
+    # Generate the response
+    try:
+        response = model.generate_content(prompt)
+        
+        # Extract and return the content
+        if hasattr(response, 'candidates') and len(response.candidates) > 0:
+            return response.candidates[0].content.parts[0].text
+        else:
+            print("No candidates found in the response.")
+            return None
+    except Exception as e:
+        print(f"Error occurred: {e}")
+        return None
+
+def generate_natural_language_response(relevant_info,question):
+    """
+    Generates a natural language response based on the relevant information.
+    """
+    if not relevant_info:
+        return "Sorry, I couldn't find any relevant information."
+
+    response = "Here's what I found based on your question:\n\n"
+    
+    # Aggregate and format the information
+    source_info = {}
+    for text, meta in relevant_info:
+        source = meta.get('source', 'Unknown')
+        if source not in source_info:
+            source_info[source] = []
+        source_info[source].append(text)
+
+    for source, texts in source_info.items():
+        aggregated_text = " ".join(texts)  # Combine all texts from the same source
+        summarized_text = reframe_with_gemini(aggregated_text,question)  # Reframe combined text
+        response += summarized_text + "\n\n"
+        response += f"Source: {source}\n"
+
+    return response.strip()
+
+def extract_relevant_information(question, text_chunks, metadata):
+    """
+    Extracts and aggregates relevant information based on the question.
+    """
+    relevant_info = []
+    keywords = re.findall(r'\b\w+\b', question.lower())
+    
+    for chunk, meta in zip(text_chunks, metadata):
+        chunk_lower = chunk.lower()
+        if any(keyword in chunk_lower for keyword in keywords):
+            relevant_info.append((chunk, meta))
+    
+    return relevant_info
 
 def query(question, chat_history):
     """
-    Handle the querying of the chatbot with context.
+    Processes a query using the conversational retrieval chain and returns a natural language response.
     """
     try:
-        embeddings = GoogleGenerativeAIEmbeddings(api_key=api_key, model="models/text-embedding-004")
-        
-        new_db = FAISS.load_local(faiss_index_path, embeddings=embeddings, allow_dangerous_deserialization=True)
-        
-        llm = ChatGoogleGenerativeAI(model="models/gemini-1.5-flash", google_api_key=api_key)
-        
-        query_chain = ConversationalRetrievalChain.from_llm(
-            llm=llm,
-            retriever=new_db.as_retriever(),
-            return_source_documents=True
-        )
-        
-        # Expand the query to include synonyms
-        expanded_question = expand_query(question)
-        
-        response = query_chain({"question": expanded_question, "chat_history": chat_history})
-        
-        sources = response.get("source_documents", [])
-        source_names = list(set(source.metadata.get("source", "Unknown") for source in sources))
-        
-        answer = response.get("answer", "").strip()
-        if not answer:
-            return {"answer": "Information not provided to me, so I'm not able to give a response.", "sources": ""}
-        
-        return {"answer": answer, "sources": "" if not source_names else source_names}
-    except Exception as e:
-        st.error(f"An error occurred while querying: {str(e)}")
-        return {"answer": "Sorry, there was an error processing your query.", "sources": "source not found"}
+        # Initialize embeddings and vector store
+        embeddings = GoogleGenerativeAIEmbeddings(api_key=os.getenv('GOOGLE_API_KEY'), model="models/text-embedding-004")
+        vector_store = FAISS.load_local("faiss_index", embeddings=embeddings, allow_dangerous_deserialization=True)
 
+        # Retrieve the relevant chunks based on the question
+        search_results = vector_store.similarity_search(question)
+        if not search_results:
+            return {"answer": "I couldn't find any relevant information.", "sources": []}
+
+        # Extract text and metadata from search results
+        text_chunks = [result.page_content for result in search_results]
+        metadata = [result.metadata for result in search_results]
+
+        # Extract relevant information
+        relevant_info = extract_relevant_information(question, text_chunks, metadata)
+
+        # Generate a response using the reframed information
+        formatted_answer = generate_natural_language_response(relevant_info,question) if relevant_info else "I couldn't find a specific answer. Could you please provide more details or ask a different question?"
+
+        return {"answer": formatted_answer}
+    
+    except Exception as e:
+        logging.error(f"Error during query: {e}")
+        return {"answer": "Oops, something went wrong while processing your query. Please try again later."}
 
 def show_ui():
     """
-    Sets up the Streamlit UI for the Chavera MedBot chatbot.
+    Sets up the Streamlit UI for the Chavera MedBot chatbot without displaying sources.
     """
     st.title("Chavera MedBot")
     st.image("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQOYTLrTipnZW-cmCRW0yjK96iMWENViez1lQ&s", width=300)  # Adjust width as needed
@@ -143,13 +217,11 @@ def show_ui():
                     st.markdown(prompt)
                 with st.chat_message("assistant"):
                     st.markdown(f"{response.get('answer', 'Sorry, I couldn\'t find an answer.')}")
-                    if response.get('sources'):
-                        st.write(f"**Source(s):** {', '.join(response['sources'])}")
 
+                # Store the messages in the session state
                 st.session_state.messages.append({"role": "user", "content": prompt})
                 st.session_state.messages.append({"role": "assistant", "content": response.get('answer', 'Sorry, I couldn\'t find an answer.')})
-                st.session_state.messages.append({"role": "assistant", "content": f"**Source(s):** {', '.join(response['sources'])}"})
-                
+
                 # Update chat history
                 st.session_state.chat_history.append((prompt, response.get('answer', 'Sorry, I couldn\'t find an answer.')))
         except Exception as e:
@@ -160,12 +232,23 @@ def show_ui():
         # Reset the chat state
         st.session_state.messages = []
         st.session_state.chat_history = []
-       
 
-# Program entry point
+
+
+
 if __name__ == "__main__":
-    # Uncomment the line below to initialize or update the FAISS index
-    initialize_index()
+    pdf_paths = [
+        r"C:\Users\vidhi\Desktop\chavera medbot\Common Diseases and Conditions.pdf",
+        r"C:\Users\vidhi\Desktop\chavera medbot\Common Symptoms and Their Potential Diagnoses.pdf",
+        r"C:\Users\vidhi\Desktop\chavera medbot\First Aid Basics.pdf",
+        r"C:\Users\vidhi\Desktop\chavera medbot\General Health Knowledge.pdf",
+        r"C:\Users\vidhi\Desktop\chavera medbot\Medications and Treatment Options.pdf",
+        r"C:\Users\vidhi\Desktop\chavera medbot\Promoting Healthy Habits.pdf",
+        r"C:\Users\vidhi\Desktop\chavera medbot\Women's Health Overview.pdf"
+    ]
+    
+    # Upload and process the PDF files (this should be done once at the start)
+    #upload_pdfs(pdf_paths)
 
-    # Comment the line above after the index is created/updated
+    # Show the Streamlit UI
     show_ui()
