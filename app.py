@@ -7,7 +7,8 @@ from langchain.chains import ConversationalRetrievalChain
 from PyPDF2 import PdfReader
 from langchain_community.vectorstores import FAISS
 import google.generativeai as genai
-from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
+from langchain_google_genai import ChatGoogleGenerativeAI
 import requests
 import re
 
