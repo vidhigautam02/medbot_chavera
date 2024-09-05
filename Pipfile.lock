@@ -135,8 +135,8 @@
                 "sha256:7084a1dab4d83c5e7e5246b92dc1b4451a6c68fd057f3716ee9d315c8980e59a"
             ],
             "index": "pypi",
-            "markers": "python_version >= '3.8'",
-            "version": "5.3.0"
+            "markers": "python_version = '3.12'",
+            "version": "5.4.0"
         },
         "annotated-types": {
             "hashes": [
