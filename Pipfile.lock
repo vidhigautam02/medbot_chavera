@@ -17,7 +17,7 @@
             ]
         },
         "altair": {
-            "version": "5.4.0",
+            "version": "5.4.1",
             "hashes": [
                 "sha256:examplehash3",
                 "sha256:examplehash4"
