@@ -81,6 +81,8 @@ def reframe_with_gemini(text,question):
     generation_config = {
         "temperature": 0.1,
         "max_output_tokens": 800,
+        "frequency_penalty": 0.5
+
     }
     
     # Initialize the model
@@ -97,7 +99,6 @@ def reframe_with_gemini(text,question):
     Present the information in bullet points or short subheadings where appropriate.
     and avoid using too many headings for the same reference. 
     Do not include any new or external information; stick strictly to the given text. 
-    ensure the answer max of 1000 words
     The response should be brief, detailed, and easily understandable by anyone.
 
     {text}
