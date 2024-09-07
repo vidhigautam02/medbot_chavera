@@ -19,4 +19,4 @@ altair= "5.4.1"
 # You can add any development-specific dependencies here, if needed
 
 [requires]
-python_version = "3.12"
+python_version = "3.12.0"
