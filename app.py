@@ -99,7 +99,7 @@ Document Text: {text}
 
 Ensure that the response:
 1. Directly addresses the specific question asked by the user.
-2. If the user query is not directly related to the document, politely explain the limitation and suggest they ask something else or consult a healthcare professional.
+2. If the user query is not directly related to the document, politely suggest they ask something else or consult a healthcare professional.
 3. Avoids introducing irrelevant information from the document or guessing answers.
 4. Encourages the user to consult a healthcare provider for more personalized or complex advice.
 
