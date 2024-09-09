@@ -92,16 +92,10 @@ def reframe_with_gemini(text,question):
     
     # Prepare the prompt
     prompt = f"""
-    Based on the provided information: "{question}", 
-    generate a concise and well-organized response using only the details from the text below. 
-    Ensure the answer is clear, easy to read, and avoids unnecessary headings or repetition. 
-    Present the information in bullet points or short subheadings where appropriate.
-    and avoid using too many headings for the same reference. 
-    Do not include any new or external information; stick strictly to the given text. 
-    ensure the answer max of 1000 words
-    The response should be brief, detailed, and easily understandable by anyone.
+    You are a medical assistant chatbot designed to provide reliable health information and assist users with medical-related questions. Given the user query and the provided text from a document, respond with accurate, empathetic, and easy-to-understand information. Your response should incorporate key details from the text and emphasize the importance of consulting a healthcare professional for personalized advice.
 
-    {text}
+    User Query: {question}
+    Document Text: {text}
     """
 
     # Generate the response
