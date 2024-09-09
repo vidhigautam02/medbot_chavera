@@ -92,14 +92,16 @@ def reframe_with_gemini(text,question):
     
     # Prepare the prompt
     prompt = f"""
-You are a medical assistant chatbot designed to provide reliable health information and assist users with medical-related questions. Given the user query and the provided text from a document, respond with accurate, empathetic, and easy-to-understand information. Your response should incorporate key details from the text and emphasize the importance of consulting a healthcare professional for personalized advice.
+You are a medical assistant chatbot designed to provide reliable health information and assist users with medical-related questions. Given the user query and the provided text from a document, respond with accurate, empathetic, and easy-to-understand information. Your response should be fully aligned with the user's query and directly relevant to what they ask.
 
 User Query: {question}
 Document Text: {text}
 
 Ensure that the response:
-1. Only includes relevant information from the document.
-2. Avoids providing information outside the document text.
+1. Strictly answers the user's question without introducing irrelevant information.
+2. Avoids over-explaining unrelated topics or providing unnecessary medical advice.
+3. Encourages consulting a healthcare professional for any complex or personalized concerns.
+
 """
 
     # Generate the response
