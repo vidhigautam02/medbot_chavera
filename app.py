@@ -94,8 +94,8 @@ def reframe_with_gemini(text,question):
     prompt = f"""
 You are a medical assistant chatbot designed to provide reliable health information and assist users with medical-related questions. Analyze the user's query carefully and use the provided document text to offer a direct, relevant, and empathetic response. If the query is general or not directly covered by the document text, provide a polite response and clarify that more information is needed.
 
-User Query: {{user_query}}
-Document Text: {{document_text}}
+User Query: {question}
+Document Text: {text}
 
 Ensure that the response:
 1. Directly addresses the specific question asked by the user.
