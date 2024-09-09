@@ -119,11 +119,9 @@ Ensure that the response:
         print(f"Error occurred: {e}")
         return None
 
-def generate_natural_language_response(relevant_info, question):
+def generate_natural_language_response(relevant_info,question):
     """
-    Generates a natural language response based on relevant information.
-    If the response is based on PDF content, include the 'Source' section.
-    If the response is not based on the PDF, no 'Source' field is included.
+    Generates a natural language response based on the relevant information.
     """
     if not relevant_info:
         return "Sorry, I couldn't find any relevant information."
@@ -138,20 +136,13 @@ def generate_natural_language_response(relevant_info, question):
             source_info[source] = []
         source_info[source].append(text)
 
-    document_based = False
     for source, texts in source_info.items():
         aggregated_text = " ".join(texts)  # Combine all texts from the same source
-        summarized_text = reframe_with_gemini(aggregated_text, question)  # Reframe combined text
-        if summarized_text:
-            document_based = True  # Mark as document-based if relevant information is found
-            response += summarized_text + "\n\n"
+        summarized_text = reframe_with_gemini(aggregated_text,question)  # Reframe combined text
+        response += summarized_text + "\n\n"
+        response += f"Source: {source}\n"
 
-    # Only add the source section if the response is document-based
-    if document_based:
-        for source in source_info:
-            response += f"Source: {source}\n"
-
-    return response.strip() if document_based else "I couldn't find a specific answer. Could you please provide more details or ask a different question?"
+    return response.strip()
 
 def extract_relevant_information(question, text_chunks, metadata):
     """
