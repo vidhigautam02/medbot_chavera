@@ -102,7 +102,7 @@ Ensure that the response:
 2. If the user query is not directly related to the document, politely suggest they ask something else or consult a healthcare professional.
 3. Avoids introducing irrelevant information from the document or guessing answers.
 4. Encourages the user to consult a healthcare provider for more personalized or complex advice.
-5. Avoids generating overly long or irrelevant responses if no information is available.
+5. Keep responses concise and relevant, avoiding overly long or irrelevant information.
 """
 
     # Generate the response
